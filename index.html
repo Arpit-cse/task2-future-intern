@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Client Lead Management CRM dashboard">
+  <title>LeadFlow | Mini CRM</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div id="loginScreen" class="login-screen">
+    <form id="loginForm" class="login-card">
+      <div class="brand-mark">L</div>
+      <h1>LeadFlow <span>CRM</span></h1>
+      <p class="muted">Sign in to manage your client leads.</p>
+
+      <label for="username">Username</label>
+      <input id="username" name="username" value="admin"
+             autocomplete="username" required>
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password"
+             autocomplete="current-password" required>
+
+      <button class="btn primary full" type="submit">Sign In</button>
+      <p id="loginMessage" class="message" role="status"></p>
+    </form>
+  </div>
+
+  <div id="app" class="app hidden">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#">Lead<span>Flow.</span></a>
+      <p class="side-label">WORKSPACE</p>
+      <a class="side-link active" href="#dashboard">▦ &nbsp; Dashboard</a>
+      <a class="side-link" href="#leads">♙ &nbsp; All Leads</a>
+      <a class="side-link" href="#leads" data-filter="new">◷ &nbsp; New Leads</a>
+      <a class="side-link" href="#leads" data-filter="contacted">↗ &nbsp; Contacted</a>
+      <a class="side-link" href="#leads" data-filter="converted">✓ &nbsp; Converted</a>
+
+      <div class="sidebar-bottom">
+        <div class="avatar">AS</div>
+        <div class="user-info">
+          <strong>Administrator</strong>
+          <small>CRM Manager</small>
+        </div>
+        <button id="logoutBtn" class="icon-btn" title="Sign out"
+                aria-label="Sign out">↪</button>
+      </div>
+    </aside>
+
+    <main class="main-content" id="dashboard">
+      <header class="topbar">
+        <button id="sidebarToggle" class="icon-btn mobile-menu"
+                aria-label="Toggle navigation">☰</button>
+        <div>
+          <p class="muted small">WORKSPACE / OVERVIEW</p>
+          <h2>Lead Dashboard</h2>
+        </div>
+        <button id="addLeadBtn" class="btn primary">＋ Add New Lead</button>
+      </header>
+
+      <div id="notice" class="notice hidden" role="status"></div>
+
+      <section class="welcome">
+        <div>
+          <p class="eyebrow">YOUR BUSINESS AT A GLANCE</p>
+          <h1>Manage relationships.<br><span>Grow your business.</span></h1>
+          <p class="muted">Track prospects, follow-ups, and conversions in one place.</p>
+        </div>
+        <div class="welcome-icon">↗</div>
+      </section>
+
+      <section class="stats-grid" aria-label="Lead statistics">
+        <article class="stat-card">
+          <div class="stat-top"><span>Total Leads</span><span class="stat-icon purple">♙</span></div>
+          <strong id="totalCount">0</strong><small>All recorded leads</small>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>New Leads</span><span class="stat-icon blue">✦</span></div>
+          <strong id="newCount">0</strong><small>Awaiting contact</small>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>Contacted</span><span class="stat-icon orange">↗</span></div>
+          <strong id="contactedCount">0</strong><small>In progress</small>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>Converted</span><span class="stat-icon green">✓</span></div>
+          <strong id="convertedCount">0</strong><small>Successful leads</small>
+        </article>
+      </section>
+
+      <section class="panel" id="leads">
+        <div class="panel-heading">
+          <div>
+            <h2>Client Leads</h2>
+            <p class="muted">View and manage your potential clients.</p>
+          </div>
+          <button id="exportBtn" class="btn secondary">↓ Export CSV</button>
+        </div>
+
+        <div class="toolbar">
+          <input id="searchInput" type="search"
+                 placeholder="Search name, email or source..."
+                 aria-label="Search leads">
+          <select id="statusFilter" aria-label="Filter by status">
+            <option value="all">All statuses</option>
+            <option value="new">New</option>
+            <option value="contacted">Contacted</option>
+            <option value="converted">Converted</option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>CLIENT</th>
+                <th>SOURCE</th>
+                <th>STATUS</th>
+                <th>FOLLOW-UP</th>
+                <th>ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="leadsTable">
+              <tr><td colspan="5" class="empty">Loading leads...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p id="leadCountLabel" class="muted table-footer">0 leads</p>
+      </section>
+    </main>
+  </div>
+
+  <div id="leadModal" class="modal hidden" role="dialog"
+       aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-heading">
+        <div>
+          <p class="eyebrow">CLIENT INFORMATION</p>
+          <h2 id="modalTitle">Add New Lead</h2>
+        </div>
+        <button id="closeModalBtn" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+
+      <form id="leadForm">
+        <input id="leadId" type="hidden">
+
+        <label for="leadName">Full Name *</label>
+        <input id="leadName" maxlength="100" required placeholder="e.g. Rahul Sharma">
+
+        <label for="leadEmail">Email Address *</label>
+        <input id="leadEmail" type="email" maxlength="254" required
+               placeholder="rahul@example.com">
+
+        <label for="leadSource">Lead Source *</label>
+        <select id="leadSource" required>
+          <option value="">Select source</option>
+          <option>Website Contact Form</option>
+          <option>LinkedIn</option>
+          <option>Referral</option>
+          <option>Instagram</option>
+          <option>Email Campaign</option>
+          <option>Other</option>
+        </select>
+
+        <label for="leadStatus">Lead Status</label>
+        <select id="leadStatus">
+          <option value="new">New</option>
+          <option value="contacted">Contacted</option>
+          <option value="converted">Converted</option>
+        </select>
+
+        <label for="leadFollowUp">Follow-up Date</label>
+        <input id="leadFollowUp" type="date">
+
+        <label for="leadNotes">Notes</label>
+        <textarea id="leadNotes" rows="4" maxlength="3000"
+                  placeholder="Add conversation notes or next steps..."></textarea>
+
+        <div class="modal-actions">
+          <button type="button" id="cancelBtn" class="btn secondary">Cancel</button>
+          <button type="submit" class="btn primary" id="saveLeadBtn">Save Lead</button>
+        </div>
+        <p id="formMessage" class="message" role="status"></p>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
